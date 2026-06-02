@@ -1,0 +1,8 @@
+cat > .gitignore << EOF
+.idea/
+*.iml
+target/
+test-output/
+executionReports/
+.DS_Store
+EOF

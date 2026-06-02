@@ -1,0 +1,13 @@
+{
+  "home": {
+    "name": "Sam",
+    "country": "India",
+    "city": "Hyderabad"
+  },
+
+  "office": {
+    "name": "Ram",
+    "country": "India",
+    "city": "Bangalore"
+  }
+}
