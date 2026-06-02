@@ -1,0 +1,160 @@
+==================================================
+PROMPT / RESPONSE LOG
+Timestamp : 20260602191641927
+==================================================
+
+----------------------------
+INPUT PROMPT
+----------------------------
+Requirement:
+1. For now Manual Test cases are available as txt files inside /ai-test-framework/testCaseBackLog folder.
+2. Refer to ProductPurchase.txt file. This contains manual test case steps for a scenario with test case id TC-ProductPurchase-01.
+3. Go through the manual test case steps thoroughly and understand the requirement.
+4. Based on the manual test case, create automation coverage.
+5. Go through the existing framework, example Feature files, pages, components, steps etc and understand if any existing code can be reused.
+6. Create a new Feature file only if functionality related feature file not found.
+7. Create new pages and components if related pages and components are not found.
+
+----------------------------
+MANUAL TEST CASE : TC-ProductPurchase-01
+----------------------------
+Scenario: Verify user is able to purchase a product successfully.
+
+1. Launch https://www.demoblaze.com/index.html in chrome.
+2. Click Login link in the nav bar.
+3. Enter username: wwq221
+4. Enter password: wwq221
+5. After login, verify logged in user is displaying in the nav bar (Welcome wwq221).
+6. Select Samsung galaxy s6.
+7. Click Add to Cart button.
+8. Verify "Product added." message in the pop up and click OK.
+9. Click Cart link in the nav bar. Wait for selected product with Delete link is displayed.
+10. Click on Place Order button.
+11. Enter order details: name: wwq2221, Country: India, City: Hyderabad, Credit card: 12345, Month: 12, Year: 2027
+12. Click on Purchase button.
+13. Validate: "Thank you for your purchase!" text, order id generated, amount, card number, user name. Click Ok.
+14. Wait for Logout link in the navbar.
+15. Click Logout link.
+
+----------------------------
+PRE-GENERATION ANALYSIS
+----------------------------
+
+EXISTING COMPONENTS REVIEWED:
+- NavBar          : selectLogIn(), selectCart(), logOut(), getUserNameFromNavBar(), waitForNavBarToLoad() → REUSED
+- LogInPanel      : logIn(user, password) → REUSED
+- HomePage        : userLogIn(), validateLoggedInUser(), logOut(), selectSignIn() → REUSED + extended with selectCart()
+- HomePageSteps   : "user selects login", "user should sign in successfully", "user should Logout" → REUSED + extended with "user selects cart"
+- LoginSteps      : "Registered user should sign in" → REUSED
+- ContextManager  : ThreadLocal context → REUSED
+- TestDataContext  : userName, password → EXTENDED with orderId field
+- AddressData     : home(), office() wrappers → REUSED
+- CardData        : visa(), masterCard() wrappers → REUSED
+- Address POJO    : REUSED (added no-arg constructor for Jackson)
+- Cards POJO      : REUSED (added no-arg constructor for Jackson)
+- products.json   : Samsung Galaxy S6 already present → REUSED
+- Actions         : click(), type(), getText(), getAlertTextAndAccept(), waitTillClickable(), waitTillVisible() → REUSED
+- Reporter        : log() → REUSED
+- AssertUtils     : assertTrue() → REUSED
+- Timeouts enum   : TEN_SECONDS, FIVE_SECONDS → REUSED
+
+COMPONENTS REUSED (unchanged):
+- NavBar, LogInPanel, LogInSteps, SignUpPageSteps, Runner, ExecutionListener, Hooks,
+  WebDriverFactory, ConfigReader, ExecutionSummary, ScenarioManager, Util
+
+COMPONENTS EXTENDED (minimal additions only):
+- HomePage.java        : added selectCart() method (delegates to navBar.selectCart())
+- HomePageSteps.java   : added "user selects cart" step definition
+- TestDataContext.java  : added orderId field with getter/setter
+- Address.java         : added no-arg constructor for Jackson deserialization
+- Cards.java           : added no-arg constructor for Jackson deserialization
+
+TEST DATA UPDATED:
+- cards.json           : fixed masterCard key (name→cardNumber); updated visa year 2025→2027 to match TC
+- address.json         : updated home.name "Sam"→"wwq2221" to match TC order details
+
+NEW COMPONENTS CREATED (functionality not found in existing framework):
+- PlaceOrderPanel.java : Component for Place Order modal (name, country, city, card, month, year inputs + purchase button)
+- ConfirmOrderPanel.java: Component for purchase confirmation panel (thank you text, order id, amount, card, name validation + OK button)
+- ProductsPage.java    : Page for product selection and Add to Cart (product link by text, add to cart, alert validation)
+- CartPage.java        : Page for cart operations (wait for product, place order, fill details, confirm purchase)
+- ProductPurchaseSteps.java : Step definitions for the product purchase flow
+- ProductPurchase.feature   : New feature file for TC-ProductPurchase-01
+
+----------------------------
+OUTPUT RESPONSE — FILES CREATED / MODIFIED
+----------------------------
+
+1. MODIFIED: src/test/resources/testData/cards.json
+   - Fixed masterCard: "name" → "cardNumber"
+   - Updated visa year: "2025" → "2027" (matches TC requirement)
+
+2. MODIFIED: src/test/resources/testData/address.json
+   - Updated home.name: "Sam" → "wwq2221" (matches TC order details)
+
+3. MODIFIED: src/test/java/web/dataManager/context/TestDataContext.java
+   - Added: private String orderId + getter + setter (to capture generated order Id at runtime)
+
+4. MODIFIED: src/test/java/web/dataManager/pojos/Address.java
+   - Added: no-arg constructor for Jackson deserialization compatibility
+
+5. MODIFIED: src/test/java/web/dataManager/pojos/Cards.java
+   - Added: no-arg constructor for Jackson deserialization compatibility
+
+6. MODIFIED: src/test/java/web/pages/HomePage.java
+   - Added: selectCart() method → delegates to navBar.selectCart() (NavBar already had this method)
+
+7. MODIFIED: src/test/java/web/steps/HomePageSteps.java
+   - Added: @When("user selects cart") step → calls homePage.selectCart()
+
+8. NEW: src/test/java/web/components/PlaceOrderPanel.java
+   - Locators: placeOrderHeading, nameInput, countryInput, cityInput, cardInput, monthInput, yearInput, purchaseButton
+   - Methods: waitForPanelToLoad(), fillOrderDetailsAndPurchase(Address, Cards)
+
+9. NEW: src/test/java/web/components/ConfirmOrderPanel.java
+   - Locators: confirmationPanel, thankYouHeading, confirmationBody, okButton
+   - Methods: waitForPanelToLoad(), getThankYouText(), getConfirmationBodyText(),
+              validateAndGetOrderId(expectedCardNumber, expectedName), clickOk(), extractOrderId(bodyText)
+
+10. NEW: src/test/java/web/pages/ProductsPage.java
+    - Methods: selectProduct(String productName), addToCart(), validateProductAddedAlert()
+
+11. NEW: src/test/java/web/pages/CartPage.java
+    - Composes: PlaceOrderPanel, ConfirmOrderPanel
+    - Methods: waitForCartToLoad(), clickPlaceOrder(), fillOrderDetailsAndPurchase(Address, Cards),
+               validatePurchaseConfirmation(expectedCardNumber, expectedName), confirmAndClose()
+
+12. NEW: src/test/java/web/steps/ProductPurchaseSteps.java
+    - Steps:
+      "user logs in with username {string} and password {string}"
+      "user selects product {string}"
+      "user adds the product to cart"
+      "product added alert should be displayed"
+      "user navigates to cart"
+      "cart should load with selected product"
+      "user places an order with home address and visa card"
+      "purchase confirmation should be displayed"
+      "user closes the confirmation"
+
+13. NEW: src/test/resources/features/ProductPurchase.feature
+    - Tag: @productPurchase @TC-ProductPurchase-01
+    - Single scenario covering full TC-ProductPurchase-01 flow
+
+----------------------------
+SCENARIO FLOW MAPPING (Manual Step → Automation)
+----------------------------
+Step 1  : Handled by Hooks @Before (browser launch + URL navigation)
+Step 2  : "user selects login"               → HomePageSteps (REUSED)
+Step 3-4: "user logs in with username..."     → ProductPurchaseSteps (NEW) + "Registered user should sign in" → LoginSteps (REUSED)
+Step 5  : "user should sign in successfully" → HomePageSteps (REUSED)
+Step 6  : "user selects product Samsung galaxy s6" → ProductPurchaseSteps → ProductsPage (NEW)
+Step 7  : "user adds the product to cart"    → ProductPurchaseSteps → ProductsPage (NEW)
+Step 8  : "product added alert should be displayed" → ProductPurchaseSteps → ProductsPage (NEW)
+Step 9  : "user selects cart" + "cart should load with selected product" → HomePageSteps (EXTENDED) + CartPage (NEW)
+Step 10-12: "user places an order with home address and visa card" → CartPage → PlaceOrderPanel (NEW)
+Step 13 : "purchase confirmation should be displayed" → CartPage → ConfirmOrderPanel (NEW)
+Step 14-15: "user closes the confirmation" + "user should Logout" → HomePageSteps (REUSED)
+
+==================================================
+END OF LOG
+==================================================

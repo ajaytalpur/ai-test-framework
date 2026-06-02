@@ -1,0 +1,33 @@
+Test Case ID : TC-ProductPurchase-01:
+
+Scenario : Verify user is able to purchase a product successfully.
+
+1. Launch https://www.demoblaze.com/index.html in chrome.
+2. Click Login link in the nav bar.
+3. Enter username : wwq221
+4. Enter password : wwq221
+5. After login, verify logged in user is displaying in the nav bar. It will display like Welcome wwq221.
+6. Select Samsung galaxy s6.
+7. Click Add to Cart button.
+8. Verify Product added. message in the pop up and click OK button.
+9. Click Cart link in the nav bar. Wait for selected product with Delete link is displayed under products in the cart page.
+10. Click on Place Order button.
+11. Enter below details in Place order panel.
+name : wwq2221
+Country : India
+City : Hyderabad
+Credit card : 12345
+Month :12
+Year : 2027
+
+12. Click on Purchase button
+13. Validate below in confirm order panel
+1. Verify Thank you for your purchase! text
+2. validate order id is generated. It will be some thing like Id: 1234567
+3. validate amount of the product Amount:
+4. validate card number Card Number: 123
+5. validate user name : Name: wwq221
+6. Click Ok button
+
+14. Wait for Logout link in the navbar
+15 Click Logout link.

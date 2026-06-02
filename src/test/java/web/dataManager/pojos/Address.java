@@ -8,6 +8,9 @@ public class Address {
     private String country;
     private String city;
 
+    public Address() {
+    }
+
     public Address(String name, String country, String city) {
         this.name = name;
         this.country = country;

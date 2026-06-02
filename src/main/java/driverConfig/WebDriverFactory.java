@@ -89,6 +89,10 @@ public class WebDriverFactory {
         prefs.put("profile.password_manager_enabled", false);
         prefs.put("autofill.profile_enabled", false);
         prefs.put("autofill.credit_card_enabled", false);
+        prefs.put("profile.password_manager_leak_detection", false);
+        options.addArguments("--disable-save-password-bubble");
+        options.addArguments("--disable-password-generation");
+        options.addArguments("--disable-features=PasswordLeakDetection");
 
         options.setExperimentalOption("prefs", prefs);
 

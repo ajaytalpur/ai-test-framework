@@ -1,0 +1,5 @@
+Order confirmation validated. Body: Id: 5824447
+Amount: 360 USD
+Card Number: 12345
+Name: wwq2221
+Date: 2/5/2026

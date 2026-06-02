@@ -17,11 +17,50 @@ public class Actions {
 
     public static void click(By locator, String message) {
         try {
-            waitTillClickable(locator, Timeouts.FIVE_SECONDS.getDuration());
+            waitTillClickable(locator, Timeouts.TEN_SECONDS.getDuration());
             getWebElement(locator).click();
         } catch (Exception e) {
             throw stopTestException("Unable to click [" + locator + "] - " + message, e);
         }
+    }
+
+    public static void refreshPage() {
+
+        WebDriver driver = WebDriverFactory.getDriver();
+
+        driver.navigate().refresh();
+
+        new WebDriverWait(driver, Timeouts.TEN_SECONDS.getDuration())
+                .until(webDriver ->
+                        "complete".equals(
+                                ((JavascriptExecutor) webDriver)
+                                        .executeScript("return document.readyState")));
+    }
+
+    public static void jsClick(By locator, String message) {
+        try {
+            waitTillClickable(locator, Timeouts.TEN_SECONDS.getDuration());
+            ((JavascriptExecutor) WebDriverFactory.getDriver())
+                    .executeScript("arguments[0].click();",
+                            getWebElement(locator));
+        } catch (Exception e) {
+            throw stopTestException("Unable to click [" + locator + "] - " + message, e);
+        }
+    }
+
+    public static void waitTillPageLoaded( String message) {
+        try {
+            waitTillPageLoaded(Timeouts.FIVE_SECONDS.getDuration());
+        } catch (Exception e) {
+            throw stopTestException(message, e);
+        }
+    }
+
+    public static void waitTillPageLoaded(Duration timeout) {
+        WebDriverWait wait = new WebDriverWait(WebDriverFactory.getDriver(), timeout);
+        wait.until(driver -> "complete".equals(
+                        ((JavascriptExecutor) driver)
+                                .executeScript("return document.readyState")));
     }
 
     public static String getText(By locator, String message) {
@@ -102,6 +141,14 @@ public class Actions {
         }
     }
 
+    public static void waitUntilTextNotToDisplay(By locator, String textToDisplay,String message) {
+        try {
+            waitUntilTextNotDisplayed(locator, textToDisplay, Timeouts.FIVE_SECONDS.getDuration());
+        } catch (Exception e) {
+            throw stopTestException("Unable to wait for [" + locator + "] - " + message, e);
+        }
+    }
+
     public static void waitTillNotClickable(By locator, Duration timeout) {
         WebDriverWait wait = new WebDriverWait(WebDriverFactory.getDriver(), timeout);
         wait.until(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(locator)));
@@ -110,6 +157,11 @@ public class Actions {
     public static void waitTillClickable(By locator, Duration timeout) {
         WebDriverWait wait = new WebDriverWait(WebDriverFactory.getDriver(), timeout);
         wait.until(ExpectedConditions.elementToBeClickable(locator));
+    }
+
+    public static void waitUntilTextNotDisplayed(By locator, String text, Duration timeout) {
+        WebDriverWait wait = new WebDriverWait(WebDriverFactory.getDriver(), timeout);
+        wait.until(ExpectedConditions.not(ExpectedConditions.textToBePresentInElementLocated(locator, text)));
     }
 
     public static void waitUntilTextToDisplay(By locator, String text, Duration timeout) {

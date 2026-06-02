@@ -3,6 +3,5 @@ cat > .gitignore << EOF
 *.iml
 target/
 test-output/
-executionReports/
 .DS_Store
 EOF

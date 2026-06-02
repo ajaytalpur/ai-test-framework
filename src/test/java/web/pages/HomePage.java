@@ -38,7 +38,12 @@ public class HomePage {
     }
 
     public void logOut(){
+        navBar.waitUntilLogoDisplayed();
         navBar.logOut();
+    }
+
+    public void selectCart() {
+        navBar.selectCart();
     }
 
 }

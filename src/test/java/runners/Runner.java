@@ -14,7 +14,7 @@ import org.testng.annotations.Listeners;
         glue = {"web.steps", "hooks"},
         monochrome = true,
         plugin = {"pretty", "json:target/cucumber/cucumber.json"},
-        tags = "@webSamp"
+        tags = "@productPurchase"
 )
 public class Runner extends AbstractTestNGCucumberTests {
 

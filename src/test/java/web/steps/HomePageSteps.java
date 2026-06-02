@@ -37,4 +37,10 @@ public class HomePageSteps {
         homePage.logOut();
         Reporter.log("Successfully Logged out with User: "+ContextManager.getContext().getUserName());
     }
+
+    @When("user selects cart")
+    public void selectCartOption() {
+        homePage.selectCart();
+        Reporter.log("Navigated to Cart page");
+    }
 }

@@ -1,0 +1,85 @@
+==================================================
+PROMPT / RESPONSE LOG
+Timestamp : 20260602185404701
+==================================================
+
+----------------------------
+INPUT PROMPT
+----------------------------
+updated Important Rules: section inside framework context.md file. go through it once again
+
+----------------------------
+OUTPUT RESPONSE
+----------------------------
+
+## Updated framework context.md — Re-read Complete
+
+The file has been re-read in full. The Important Rules section has been added at the bottom of the document. Here is what was noted:
+
+---
+
+### New Section: Important Rules (10 Rules Added)
+
+1. Reuse existing classes, utilities, managers, wrappers, page objects, hooks, listeners, configurations, and helper methods wherever possible.
+
+2. Do not create duplicate functionality.
+
+3. Create new code only when the required functionality does not already exist.
+
+4. Maintain consistency with the current framework architecture, package structure, naming conventions, and coding style.
+
+5. Prefer extending existing components over introducing new ones.
+
+6. Ensure all new code is robust, scalable, maintainable, and production-ready.
+
+7. Follow SOLID principles, clean code practices, and design patterns already used in the framework.
+
+8. Implement proper logging, exception handling, and validation.
+
+9. Avoid hardcoded values; use configuration or reusable constants.
+
+10. Before generating code, explain:
+    - Which existing components were analyzed
+    - Which components can be reused
+    - Why any new component is required
+
+    The final solution should minimize code duplication and maximize framework reusability.
+
+---
+
+### What These Rules Mean in Practice
+
+Rule 1-3 (Reuse First):
+  Before writing any new class or method, I must check whether Actions, AssertUtils, Reporter, ConfigReader, Util, TestDataManager, ContextManager, ScenarioManager, WebDriverFactory, existing Pages, Components, or wrapper classes already cover the need. New code is the last resort, not the first.
+
+Rule 4 (Consistency):
+  All new code must follow the existing package layout (assertions / driverConfig / enums / hooks / utilities in main; runners / web/components / web/pages / web/steps / web/dataManager in test), use the same naming patterns (e.g., NavBar, LogInPanel, HomePageSteps), and match the coding style already present (@author tag, final utilities, private constructors, etc.).
+
+Rule 5 (Extend over create):
+  If a component like NavBar or LogInPanel almost covers a need, prefer adding a method to it rather than creating a parallel component.
+
+Rule 6-7 (Quality standards):
+  No quick hacks. All generated code must be production-ready, follow SOLID principles (single responsibility, open/closed, etc.), and match patterns already seen in the framework (e.g., ThreadLocal for parallel safety, AtomicInteger for counters, ConcurrentHashMap for caches).
+
+Rule 8 (Logging + exceptions):
+  Use Reporter.log() for step-level logging. Use Actions.stopTestException() for wrapping Selenium errors. Provide meaningful messages. Never swallow exceptions silently.
+
+Rule 9 (No hardcoding):
+  Use Timeouts enum for wait durations, config.properties / RuntimeConfig for environment values, testData JSON + TestDataManager for test data. No magic strings or numbers.
+
+Rule 10 (Pre-generation analysis required):
+  Before producing any code artifact, I must explicitly state:
+    - Which existing components I reviewed
+    - Which I am reusing (and how)
+    - Why a new component is needed (if any)
+  This ensures the response is deliberate and traceable.
+
+---
+
+### Summary
+
+The Important Rules section elevates the framework context from architecture documentation to a governance model for AI-assisted code generation. These rules ensure that every generated artifact fits naturally into the existing framework without drift, duplication, or inconsistency. They are now fully internalized and will be applied to all future code generation tasks.
+
+==================================================
+END OF LOG
+==================================================

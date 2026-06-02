@@ -22,6 +22,11 @@ public class NavBar {
         Actions.click(demoLogo, "Main Logo");
     }
 
+    public void waitUntilLogoDisplayed() {
+        Actions.waitTillPageLoaded("Waiting for page to load");
+        Actions.waitTillClickable(demoLogo,"Main Logo");
+    }
+
     public void selectHome() {
         Actions.click(home, "Home link");
     }

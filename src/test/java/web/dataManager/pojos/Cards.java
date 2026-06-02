@@ -8,6 +8,9 @@ public class Cards {
     private String month;
     private String year;
 
+    public Cards() {
+    }
+
     public Cards(String cardNumber, String month, String year) {
         this.cardNumber = cardNumber;
         this.month = month;

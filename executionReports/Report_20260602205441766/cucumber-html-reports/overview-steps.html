@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.tablesorter.min.js"></script>
+<script src="js/Chart.min.js"></script>
+<script src="js/moment.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
+<link rel="stylesheet" href="css/cucumber.css" type="text/css"/>
+<link rel="stylesheet" href="css/font-awesome.min.css"/>
+<link rel="shortcut icon" href="images/favicon.png"/>
+
+<script>
+$(document).ready(function() {
+    // this will tell tablesorter to try looking for the data-value attribute
+    // if present, it'll sort by that instead
+    // otherwise, it'll sort by the text content of the table cell
+    $("#tablesorter").tablesorter({
+        textAttribute: 'data-value',
+        // ignores the first row of the header, the 'scenario', 'steps', since
+        // sorting those doesn't make sense
+        selectorHeaders: '> thead tr:not(.dont-sort) th',
+        // use a stable sort
+        sortStable: true
+    });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<title>Cucumber Reports  - Steps Overview</title>
+
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navigation">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse">
+      <p class="navbar-text navbar-left">Cucumber Report</p>
+      <ul class="nav navbar-nav navbar-right">
+        <li role="presentation" ><a href="overview-features.html">Features</a></li>
+        <li role="presentation" ><a href="overview-tags.html">Tags</a></li>
+        <li role="presentation"     class="active" ><a href="overview-steps.html">Steps</a></li>
+        <li role="presentation" ><a href="overview-failures.html">Failures</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container-fluid">
+  <div class="col-md-5 col-md-offset-1">
+
+<table class="table table-bordered" id="build-info">
+  <thead>
+    <tr>
+      <th>Project</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="info">
+      <td>sampProject</td>
+      <td>02 Jun 2026, 20:54</td>
+    </tr>
+  </tbody>
+</table>
+
+  </div>
+  <div class="col-md-3 col-md-offset-2">
+  </div>
+</div>
+
+
+<div id="report-lead" class="container-fluid">
+  <div class="col-md-10 col-md-offset-1">
+    <h2>Steps Statistics</h2>
+      <p>The following graph shows step statistics for this build. Below list is based on results.
+ step does not provide information about result then is not listed below.
+ Additionally @Before and @After are not counted because they are part of the scenarios, not steps.</p>
+  </div>
+</div>
+
+<div class="container-fluid" id="report">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <table id="tablesorter" class="stats-table table-hover">
+
+        <thead>
+          <tr class="header">
+            <th>Implementation</th>
+            <th>Occurrences</th>
+            <th>Average duration</th>
+            <th>Max duration</th>
+            <th>Total durations</th>
+            <th>Ratio</th>
+          </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+              <td class="location">hooks.Hooks.setup(io.cucumber.java.Scenario)</td>
+              <td>1</td>
+              <td class="duration" data-value="6159118000">6.159</td>
+              <td class="duration" data-value="6159118000">6.159</td>
+              <td class="duration" data-value="6159118000">6.159</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">hooks.Hooks.tearDown()</td>
+              <td>1</td>
+              <td class="duration" data-value="124338000">0.124</td>
+              <td class="duration" data-value="124338000">0.124</td>
+              <td class="duration" data-value="124338000">0.124</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.HomePageSteps.selectCartOption()</td>
+              <td>1</td>
+              <td class="duration" data-value="711546000">0.711</td>
+              <td class="duration" data-value="711546000">0.711</td>
+              <td class="duration" data-value="711546000">0.711</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.HomePageSteps.selectLoginOption()</td>
+              <td>1</td>
+              <td class="duration" data-value="108565000">0.108</td>
+              <td class="duration" data-value="108565000">0.108</td>
+              <td class="duration" data-value="108565000">0.108</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.HomePageSteps.successfulSignIn()</td>
+              <td>1</td>
+              <td class="duration" data-value="1613276000">1.613</td>
+              <td class="duration" data-value="1613276000">1.613</td>
+              <td class="duration" data-value="1613276000">1.613</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.HomePageSteps.userLogout()</td>
+              <td>1</td>
+              <td class="duration" data-value="2794333000">2.794</td>
+              <td class="duration" data-value="2794333000">2.794</td>
+              <td class="duration" data-value="2794333000">2.794</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.LoginSteps.signupShouldBeSuccessful()</td>
+              <td>1</td>
+              <td class="duration" data-value="883067000">0.883</td>
+              <td class="duration" data-value="883067000">0.883</td>
+              <td class="duration" data-value="883067000">0.883</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.ProductPurchaseSteps.cartShouldLoadWithSelectedProduct()</td>
+              <td>1</td>
+              <td class="duration" data-value="1582188000">1.582</td>
+              <td class="duration" data-value="1582188000">1.582</td>
+              <td class="duration" data-value="1582188000">1.582</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.ProductPurchaseSteps.productAddedAlertShouldBeDisplayed()</td>
+              <td>1</td>
+              <td class="duration" data-value="1030350000">1.030</td>
+              <td class="duration" data-value="1030350000">1.030</td>
+              <td class="duration" data-value="1030350000">1.030</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.ProductPurchaseSteps.purchaseConfirmationShouldBeDisplayed()</td>
+              <td>1</td>
+              <td class="duration" data-value="46034000">0.046</td>
+              <td class="duration" data-value="46034000">0.046</td>
+              <td class="duration" data-value="46034000">0.046</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.ProductPurchaseSteps.userAddsProductToCart()</td>
+              <td>1</td>
+              <td class="duration" data-value="1121605000">1.121</td>
+              <td class="duration" data-value="1121605000">1.121</td>
+              <td class="duration" data-value="1121605000">1.121</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.ProductPurchaseSteps.userClosesTheConfirmation()</td>
+              <td>1</td>
+              <td class="duration" data-value="1461836000">1.461</td>
+              <td class="duration" data-value="1461836000">1.461</td>
+              <td class="duration" data-value="1461836000">1.461</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.ProductPurchaseSteps.userLogsInWithCredentials(java.lang.String,java.lang.String)</td>
+              <td>1</td>
+              <td class="duration" data-value="5431000">0.005</td>
+              <td class="duration" data-value="5431000">0.005</td>
+              <td class="duration" data-value="5431000">0.005</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.ProductPurchaseSteps.userPlacesOrderWithHomeAddressAndVisaCard()</td>
+              <td>1</td>
+              <td class="duration" data-value="1156235000">1.156</td>
+              <td class="duration" data-value="1156235000">1.156</td>
+              <td class="duration" data-value="1156235000">1.156</td>
+              <td class="passed">100.00%</td>
+            </tr>
+            <tr>
+              <td class="location">web.steps.ProductPurchaseSteps.userSelectsProduct(java.lang.String)</td>
+              <td>1</td>
+              <td class="duration" data-value="799736000">0.799</td>
+              <td class="duration" data-value="799736000">0.799</td>
+              <td class="duration" data-value="799736000">0.799</td>
+              <td class="passed">100.00%</td>
+            </tr>
+        </tbody>
+
+        <tfoot class="total">
+          <tr>
+            <td>15</td>
+            <td>15</td>
+            <td class="duration">1.306</td>
+            <td class="duration">6.159</td>
+            <td class="duration">19.597</td>
+            <td>Totals</td>
+          </tr>
+        </tfoot>
+
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<nav class="navbar navbar-default" id="footer">
+  <div class="container-fluid">
+    <p class="navbar-text navbar-right">
+        <small>generate Cucumber HTML reports via:&nbsp;</small>
+        <a class="navbar-link" href="https://github.com/jenkinsci/cucumber-reports-plugin">Jenkins Plugin</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/cucumber-reporting">Standalone</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/cucumber-sandwich">Sandwich</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/maven-cucumber-reporting">Maven</a>
+        &nbsp;&nbsp;
+    </p>
+  </div>
+</nav>
+
+</body>
+</html>

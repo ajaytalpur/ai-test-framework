@@ -1,0 +1,338 @@
+==================================================
+PROMPT / RESPONSE LOG
+Timestamp : 20260602183925757
+==================================================
+
+----------------------------
+INPUT PROMPT
+----------------------------
+1. This ai-test-framework , is a working automation frame work developed using Java, Selenium, TestNG, cucumber etc.
+2. This framework is able to execute existing feature files in parallel and able to generate the reports
+3. Now Analyse the framework ai-test-framework
+4. Understand the folder structure
+5. Go through each and every file and understand the usage.
+6. go through /ai-test-framework/aiContext/famework context.md
+7. Every time Save Input prompts and out put responses as a text file inside /ai-test-framework/aiContext/promptIO folder. example log_timestamp.txt. (timestamp should be of yyyyMMddHHmmssSSS format)
+
+----------------------------
+OUTPUT RESPONSE
+----------------------------
+
+## Framework Analysis: ai-test-framework
+
+### Overview
+
+ai-test-framework is a BDD-based Selenium automation framework targeting https://www.demoblaze.com. It is built with:
+  - Java 21
+  - Selenium WebDriver 4.44.0
+  - Cucumber 7.34.3 (BDD layer)
+  - TestNG 7.12.0 (execution engine)
+  - Maven (build + reporting)
+  - Jackson (JSON test data)
+  - Masterthought Cucumber Reports (HTML reporting)
+  - Log4j 2.26.0 (logging)
+  - Commons IO 2.20.0
+
+The framework supports parallel scenario execution via TestNG's DataProvider and generates Masterthought HTML reports after each run.
+
+---
+
+### Root-Level Files
+
+| File | Purpose |
+|------|---------|
+| pom.xml | Maven build file. Declares dependencies (Selenium, Cucumber, TestNG, Jackson, Masterthought), Java 21 compiler config, and the maven-cucumber-reporting plugin that runs at `verify` phase to produce reports from target/cucumber/cucumber.json |
+| config.properties | Runtime configuration: url=https://www.demoblaze.com/index.html, browser=chrome, executionType=local |
+| README.md | Project README |
+| .gitignore | Git exclusions |
+
+---
+
+### Folder Structure
+
+```
+ai-test-framework/
+├── config.properties               <- Runtime config (url, browser, executionType)
+├── pom.xml                         <- Maven build + dependencies
+├── aiContext/
+│   ├── famework context.md         <- AI rules and architecture documentation
+│   └── promptIO/                   <- AI prompt/response logs (this file lives here)
+├── executionReports/               <- Generated Masterthought HTML reports (timestamped)
+│   └── Report_<timestamp>/
+│       └── cucumber-html-reports/  <- CSS, fonts, JS, HTML overview pages
+└── src/
+    ├── main/java/                  <- Core framework (reusable across projects)
+    │   ├── assertions/
+    │   │   └── AssertUtils.java
+    │   ├── driverConfig/
+    │   │   ├── Actions.java
+    │   │   ├── RuntimeConfig.java
+    │   │   └── WebDriverFactory.java
+    │   ├── enums/
+    │   │   └── Timeouts.java
+    │   ├── hooks/
+    │   │   └── Hooks.java
+    │   └── utilities/
+    │       ├── ConfigReader.java
+    │       ├── ExecutionSummary.java
+    │       ├── Reporter.java
+    │       ├── ScenarioManager.java
+    │       ├── ScenarioResult.java
+    │       └── Util.java
+    └── test/
+        ├── java/
+        │   ├── runners/
+        │   │   ├── Runner.java
+        │   │   └── ExecutionListener.java
+        │   └── web/
+        │       ├── components/
+        │       │   ├── NavBar.java
+        │       │   ├── LogInPanel.java
+        │       │   └── SignUpPanel.java
+        │       ├── dataManager/
+        │       │   ├── TestDataManager.java
+        │       │   ├── context/
+        │       │   │   ├── ContextManager.java
+        │       │   │   └── TestDataContext.java
+        │       │   ├── pojos/
+        │       │   │   ├── Address.java
+        │       │   │   ├── Cards.java
+        │       │   │   └── Products.java
+        │       │   └── wrapper/
+        │       │       ├── AddressData.java
+        │       │       ├── CardData.java
+        │       │       └── ProductData.java
+        │       ├── pages/
+        │       │   ├── HomePage.java
+        │       │   ├── SignInPage.java
+        │       │   └── SignUpPage.java
+        │       └── steps/
+        │           ├── HomePageSteps.java
+        │           ├── LoginSteps.java
+        │           └── SignUpPageSteps.java
+        └── resources/
+            ├── features/
+            │   ├── SignUpBatch1.feature
+            │   └── SignUpBatch2.feature
+            └── testData/
+                ├── address.json
+                ├── cards.json
+                └── products.json
+```
+
+---
+
+### File-by-File Analysis
+
+#### src/main/java/assertions/AssertUtils.java
+A final utility class wrapping TestNG assertions (assertEquals, assertNotEquals, assertTrue, assertFalse, assertNull, assertNotNull). On failure, it calls Actions.stopTestException() which captures a screenshot and wraps the error in a RuntimeException. This ensures screenshots are always taken on assertion failures. Rule: never use raw TestNG Assert in step definitions.
+
+#### src/main/java/driverConfig/Actions.java
+The central Selenium interaction layer. All UI interactions go through here. Key methods:
+  - click(By, String) - waits till clickable then clicks
+  - type(By, String, String) - clears field then types
+  - getText(By, String) - waits till visible then gets text
+  - getAlertTextAndAccept() - waits for alert, reads text, accepts it
+  - waitTillClickable(By, Duration / String) - WebDriverWait wrapper
+  - waitTillNotClickable(By, Duration / String) - negative clickable wait
+  - waitTillVisible(By, Duration) - presence of element wait
+  - waitUntilTextToDisplay(By, String, Duration / String) - text-in-element wait
+  - getWebElement(By) / getWebElements(By) - element finders
+  - stopTestException(String, Throwable) - takes screenshot + wraps exception
+All waits default to Timeouts.FIVE_SECONDS. Rule: never call driver.findElement() directly in pages or steps.
+
+#### src/main/java/driverConfig/RuntimeConfig.java
+Reads browser, executionType, and url from config.properties, with System.getProperty() overrides for CI/CD. This allows config values to be passed as -D Maven arguments.
+
+#### src/main/java/driverConfig/WebDriverFactory.java
+Manages ThreadLocal<WebDriver> for thread-safe parallel execution. Methods:
+  - createDriver() - branches on executionType (local / browserstack)
+  - initializeLocalDriver(String) - supports chrome, firefox, safari
+  - setChromeOptions() - disables automation info bar, password manager, autofill
+  - getDriver() - returns thread-local driver, throws if null
+  - quitDriver() - quits and removes from ThreadLocal
+BrowserStack support is stubbed and throws UnsupportedOperationException.
+
+#### src/main/java/enums/Timeouts.java
+Enum defining THREE_SECONDS(3s), FIVE_SECONDS(5s), TEN_SECONDS(10s) as Duration values. Used by Actions class. Rule: never hardcode wait durations.
+
+#### src/main/java/hooks/Hooks.java
+Cucumber @Before/@After lifecycle hooks:
+  - @Before: sets current scenario in ScenarioManager, creates WebDriver via WebDriverFactory, navigates to URL, maximizes window
+  - @After: checks pass/fail status, increments ExecutionSummary counters, adds ScenarioResult, removes scenario from ThreadLocal, quits driver
+This is the only place driver setup/teardown should happen.
+
+#### src/main/java/utilities/ConfigReader.java
+Reads .properties files from the project root. Takes filename (without extension) as constructor argument. Loads file via FileInputStream. Used by RuntimeConfig to read config.properties.
+
+#### src/main/java/utilities/ExecutionSummary.java
+Thread-safe execution tracking using AtomicInteger for pass/fail counts and CopyOnWriteArrayList for ScenarioResult objects. Methods: incrementPassed(), incrementFailed(), getPassed(), getFailed(), addResult(), getResults(). Used by Hooks (write) and ExecutionListener (read).
+
+#### src/main/java/utilities/Reporter.java
+Single static method log(String message) that attaches plain text to the current Cucumber scenario via ScenarioManager. This makes logs appear inside the Cucumber HTML report. Rule: use Reporter.log() instead of System.out.println() in test code.
+
+#### src/main/java/utilities/ScenarioManager.java
+ThreadLocal<Scenario> storage. Methods: setScenario(), getScenario(), removeScenario(). Set in Hooks @Before, accessed by Reporter.log() and Util.attachScreenshot(), removed in Hooks @After. Essential for thread-safe parallel scenario logging.
+
+#### src/main/java/utilities/ScenarioResult.java
+Simple POJO holding scenarioName (String) and scenarioStatus (String). Stored in ExecutionSummary and printed by ExecutionListener at the end of the run.
+
+#### src/main/java/utilities/Util.java
+Utility methods:
+  - isLocalMachine() - reads executionType from config
+  - getTimeStamp() - returns yyyyMMddHHmmssSSS formatted string using LocalDateTime
+  - attachScreenshot() - takes PNG screenshot via TakesScreenshot and attaches to Cucumber scenario with "Fail_<timestamp>" label
+
+---
+
+#### src/test/java/runners/Runner.java
+The TestNG entry point. Extends AbstractTestNGCucumberTests and overrides scenarios() with @DataProvider(parallel=true) enabling parallel scenario execution. CucumberOptions configure:
+  - features: src/test/resources/features
+  - glue: web.steps, hooks (step definitions + Cucumber hooks)
+  - plugin: pretty (console) + json:target/cucumber/cucumber.json (for reporting)
+  - tags: @webSamp (only scenarios tagged @webSamp run)
+Has @Listeners(ExecutionListener.class) for pre/post execution callbacks.
+
+#### src/test/java/runners/ExecutionListener.java
+Implements TestNG IExecutionListener:
+  - onExecutionStart() - prints start banner
+  - onExecutionFinish() - prints passed/failed counts + all scenario results, then generates Masterthought HTML report from target/cucumber/cucumber.json into executionReports/Report_<timestamp>/ directory
+
+---
+
+#### src/test/java/web/components/NavBar.java
+Component encapsulating the top navigation bar of demoblaze.com. Locators (all private): demoLogo, home, signUp, logIn, logOut, cart, loggedInUser. Methods: waitForNavBarToLoad(), clickMainLogo(), selectHome(), logOut(), selectCart(), selectLogIn(), selectSignUp(), getUserNameFromNavBar(). All interactions go via Actions class.
+
+#### src/test/java/web/components/LogInPanel.java
+Component for the login modal popup. Locators: logInHeading, userNameInput, passwordInput, logInButton. Method logIn(String user, String password) waits for the modal heading, types credentials, and clicks login.
+
+#### src/test/java/web/components/SignUpPanel.java
+Component for the sign-up modal popup. Locators: signUpHeading, signUpUserNameInput, signUpPasswordInput, signUpButton. Methods: signUp(String user, String password) and getSignUpSuccessMessage() (reads and accepts the success alert).
+
+---
+
+#### src/test/java/web/pages/HomePage.java
+Page object for the home page. Composes NavBar and LogInPanel components. Business methods:
+  - selectSignUp() - delegates to navBar.selectSignUp()
+  - selectSignIn() - delegates to navBar.selectLogIn()
+  - userLogIn(String, String) - clicks login link + completes login form
+  - validateLoggedInUser(String) - asserts navbar shows correct username via AssertUtils
+  - logOut() - delegates to navBar.logOut()
+No locators or Selenium code. Pure business actions.
+
+#### src/test/java/web/pages/SignInPage.java
+Page object wrapping LogInPanel. Single business method signIn(String, String) delegates to logInPanel.logIn(). Used when sign-in is performed from a page context other than home.
+
+#### src/test/java/web/pages/SignUpPage.java
+Page object wrapping SignUpPanel. Methods:
+  - userSignup(String, String) - delegates to signUpPanel.signUp()
+  - validateSignUpMessage() - gets alert text from panel and asserts it contains "Sign up successful"
+
+---
+
+#### src/test/java/web/steps/HomePageSteps.java
+Step definitions for home page actions. Maps Cucumber steps to HomePage methods. Uses ContextManager to retrieve stored username for validation and logout logging. Steps: "user selects signup", "user selects login", "user should sign in successfully", "user should Logout".
+
+#### src/test/java/web/steps/LoginSteps.java
+Step definitions for login. Retrieves username and password from ContextManager and calls signInPage.signIn(). Step: "Registered user should sign in".
+
+#### src/test/java/web/steps/SignUpPageSteps.java
+Step definitions for sign-up. The "user {} completes signup" step generates a unique username (user_<timestamp>) and password (Pass_<timestamp>), stores them in ContextManager, then calls signUpPage.userSignup(). Step "signup should be successful" validates the alert message. This pattern ensures no username collisions across parallel runs.
+
+---
+
+#### src/test/java/web/dataManager/TestDataManager.java
+Final utility class for JSON test data. Uses Jackson ObjectMapper with ConcurrentHashMap cache. Loads JSON from src/test/resources/testdata/<file>.json via classpath. Methods:
+  - getObject(String file, Class<T>, String... path) - maps JSON node to POJO
+  - getValue(String file, String... path) - returns String value
+  - getInt / getBoolean - typed value accessors
+  - clearCache() - clears the JSON cache
+Rule: never hardcode test data. Use this or wrapper classes.
+
+#### src/test/java/web/dataManager/context/ContextManager.java
+ThreadLocal<TestDataContext> storage initialized with TestDataContext::new. Methods getContext() and removeContext(). Allows step definitions to share runtime data (username, password generated during a scenario) without static variables. Thread-safe for parallel execution.
+
+#### src/test/java/web/dataManager/context/TestDataContext.java
+Simple POJO with String userName and String password fields. Holds runtime context for a single scenario thread.
+
+#### src/test/java/web/dataManager/pojos/Address.java
+POJO for address test data: name, country, city. Used with AddressData wrapper.
+
+#### src/test/java/web/dataManager/pojos/Cards.java
+POJO for card test data: cardNumber, month, year. Used with CardData wrapper.
+
+#### src/test/java/web/dataManager/pojos/Products.java
+POJO for product test data: name, description, price. Used with ProductData wrapper.
+
+#### src/test/java/web/dataManager/wrapper/AddressData.java
+Typed wrapper for address.json. Methods: home(), office(), getAddress(String type). Calls TestDataManager.getObject("address", Address.class, addressType).
+
+#### src/test/java/web/dataManager/wrapper/CardData.java
+Typed wrapper for cards.json. Methods: visa(), masterCard(), getCard(String type). Calls TestDataManager.getObject("cards", Cards.class, cardType).
+
+#### src/test/java/web/dataManager/wrapper/ProductData.java
+Typed wrapper for products.json. Methods: getLaptop(String brand), getPhones(String brand). NOTE: currently imports io.cucumber.messages.types.Product instead of web.dataManager.pojos.Products - this appears to be a bug, it should use the local Products POJO.
+
+---
+
+#### src/test/resources/features/SignUpBatch1.feature
+Feature file with 3 scenario outlines using @webSamp tag (@testCase01 ajay, @testCase02 vijay, @testCase03 prajay). Flow: signup → validate signup success → login → validate logged in → logout.
+
+#### src/test/resources/features/SignUpBatch2.feature
+Feature file with 3 more scenario outlines using @webSamp tag (@testCase04 hello, @testCase05 world, @testCase06 welcome). Same flow as Batch1.
+
+#### src/test/resources/testData/address.json
+Contains home and office address test data objects.
+
+#### src/test/resources/testData/cards.json
+Contains visa and masterCard payment card test data. NOTE: masterCard object uses "name" instead of "cardNumber" - likely a typo in the JSON.
+
+#### src/test/resources/testData/products.json
+Contains laptops (mac, dell) and phones (samsung, apple) product test data with name, description, price.
+
+---
+
+### Execution Flow (End to End)
+
+1. Maven runs TestNG via maven-surefire-plugin
+2. Runner.java picks up all scenarios tagged @webSamp in parallel
+3. For each scenario thread:
+   a. Hooks @Before: ScenarioManager stores scenario, WebDriverFactory creates ThreadLocal ChromeDriver, navigates to demoblaze URL, maximizes
+   b. Steps execute: SignUpPageSteps generates unique user+pass, stores in ContextManager, performs signup, validates alert, then clicks login, signs in with stored credentials, validates navbar username, logs out
+   c. Hooks @After: records pass/fail in ExecutionSummary, stores ScenarioResult, removes ThreadLocal scenario, quits driver
+4. After all scenarios: ExecutionListener.onExecutionFinish() prints summary, generates Masterthought report into executionReports/Report_<timestamp>/
+
+### Parallel Execution Design
+
+- WebDriver: ThreadLocal in WebDriverFactory - each thread has its own browser
+- Scenario: ThreadLocal in ScenarioManager - each thread logs to its own scenario
+- Context: ThreadLocal in ContextManager - each thread has isolated username/password
+- ExecutionSummary: AtomicInteger + CopyOnWriteArrayList - thread-safe shared counters
+- TestDataManager: ConcurrentHashMap cache - thread-safe JSON loading
+
+### Identified Observations / Potential Issues
+
+1. ProductData.java imports io.cucumber.messages.types.Product (wrong import) instead of web.dataManager.pojos.Products. This will cause a runtime error if ProductData is used.
+2. cards.json masterCard entry uses "name" key instead of "cardNumber" - Jackson deserialization to Cards POJO will fail for masterCard.
+3. ContextManager.removeContext() is never called in Hooks @After - could cause memory leak in long parallel runs (ThreadLocal not cleaned up).
+4. BrowserStack support in WebDriverFactory is stubbed and throws UnsupportedOperationException.
+5. Address POJO has no no-arg constructor - Jackson deserialization requires either @JsonCreator or a no-arg constructor. Same for Cards and Products POJOs.
+
+---
+
+### Framework Rules Summary (from famework context.md)
+
+- Never use driver.findElement() in pages/steps → use Actions.*()
+- Never use Thread.sleep() → use existing wait methods
+- Never hardcode test data → use TestDataManager or wrapper classes
+- Never use System.out.println() in test code → use Reporter.log()
+- Never create static WebDriver → use WebDriverFactory.getDriver()
+- Never share data between steps via static variables → use ContextManager
+- Always use AssertUtils for assertions, never raw TestNG Assert
+- Every Java file must include @author Ajay Talpur
+- Reusable UI sections must become Components, not duplicated in pages
+- Step definitions must be thin, calling page methods only
+
+==================================================
+END OF LOG
+==================================================
